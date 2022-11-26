@@ -32,8 +32,10 @@ const editTodo = async (req, res) => {
       for (let task in tasks) {
         if (tasks[task].taskTitle != todo.tasks[task].taskTitle) {
           todo.tasks[task].taskTitle = tasks[task].taskTitle;
-        }
-        if (tasks[task].isDone != todo.tasks[task].isDone) {
+          if (tasks[task].isDone != todo.tasks[task].isDone) {
+            todo.tasks[task].isDone = tasks[task].isDone;
+          }
+        } else if (tasks[task].isDone != todo.tasks[task].isDone) {
           todo.tasks[task].isDone = tasks[task].isDone;
         }
       }
