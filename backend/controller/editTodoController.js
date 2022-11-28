@@ -13,34 +13,25 @@ const editTodo = async (req, res) => {
       message: "Todo ID not present",
     });
   }
-  //   if (!(todoTitle || tasks)) {
-  //     return res.status(400).json({
-  //       success: false,
-  //       message: "Pass some values",
-  //     });
-  //   }
-
-  const todo = await Todo.findOne({ _id: todoId });
+  if (!(todoTitle && tasks)) {
+    res.status(400).json({
+      success: false,
+      message: "Please send correct data",
+    });
+  }
 
   try {
-    if (todoTitle) {
-      if (todoTitle != todo.todoTitle) {
-        todo.todoTitle = todoTitle;
-      }
-    }
-    if (tasks.length > 0) {
-      for (let task in tasks) {
-        if (tasks[task].taskTitle != todo.tasks[task].taskTitle) {
-          todo.tasks[task].taskTitle = tasks[task].taskTitle;
-          if (tasks[task].isDone != todo.tasks[task].isDone) {
-            todo.tasks[task].isDone = tasks[task].isDone;
-          }
-        } else if (tasks[task].isDone != todo.tasks[task].isDone) {
-          todo.tasks[task].isDone = tasks[task].isDone;
-        }
-      }
-    }
+    const todo = await Todo.findOne({ _id: todoId });
+
+    todo.updateTodo(todoTitle, tasks);
+
     todo.save();
+
+    console.log(todo);
+    res.status(200).json({
+      success: true,
+      todo,
+    });
   } catch (error) {
     console.log("Error while creating/editing task");
     console.log(error.message);
@@ -49,11 +40,6 @@ const editTodo = async (req, res) => {
       message: "Error while creating/editing task",
     });
   }
-
-  res.status(200).json({
-    success: true,
-    todo,
-  });
 };
 
 module.exports = editTodo;

@@ -11,8 +11,8 @@ const App = () => {
 
   const getAllTodo = async () => {
     try {
-      const allTodo = await axios("/getAllTodo");
-      // setAllTodoData(allTodo.data.todo);
+      const allTodo = await axios.get("/getAllTodo");
+      setAllTodoData(allTodo.data.todo);
     } catch (error) {
       console.log("Error while fetching All Todo");
       console.log(error);
@@ -22,7 +22,7 @@ const App = () => {
   useEffect(() => {
     getAllTodo();
   }, []);
-  console.log(allTodoData);
+  // console.log(allTodoData);
   return (
     <>
       <div className="mt-5 mx-5 lg:ml-64 flex flex-wrap gap-2 md:gap-5">
@@ -31,11 +31,9 @@ const App = () => {
 
       <div className="mt-5 mx-5 lg:ml-64 flex flex-wrap gap-4 lg:gap-7">
         {allTodoData ? (
-          allTodoData.map((todo, index) => (
-            <TodoCard todoTitle={todo} key={index} />
-          ))
+          allTodoData.map((todo, index) => <TodoCard todo={todo} key={index} />)
         ) : (
-          <img src={relaxingImage} />
+          <img src={relaxingImage} alt="relaxingImage" />
         )}
       </div>
     </>

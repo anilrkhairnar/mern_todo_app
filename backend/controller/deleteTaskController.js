@@ -23,8 +23,9 @@ const deleteTask = bigPromise(async (req, res) => {
       });
     }
     const todo = await Todo.findOne({ _id: todoId });
-    todo.tasks.pull(task);
-    console.log(todo);
+    todo.tasks.filter((dbTask) => {
+      dbTask.taskTitle === task.taskTitle && todo.tasks.pull(task);
+    });
     todo.save();
   } catch (error) {
     console.log("error while deleting Todo");

@@ -11,6 +11,9 @@ const {
   deleteTask,
 } = require("../controller");
 
+router.route("/").get((req, res) => {
+  res.status(200).send("hello");
+});
 router.route("/getAllTodo").get(getAllTodo);
 router.route("/createTodo").post(createTodo);
 router.route("/createTask/:todoId").put(createTask);
