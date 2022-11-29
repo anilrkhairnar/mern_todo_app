@@ -1,10 +1,19 @@
 // import bigPromise
-const bigPromise = require("../middleware/bigPromise");
+const bigPromise = require("../../middleware/bigPromise");
 
 // import model
-const Todo = require("../model/todo");
+const Todo = require("../../model/todo");
 
 const deleteTodo = bigPromise(async (req, res) => {
+  const user = req.user;
+  if (!user) {
+    new Error("Access Denied");
+    return res.status(400).json({
+      success: false,
+      message: "Access Denied",
+    });
+  }
+
   const todoId = req.params.todoId;
   if (!todoId) {
     return res.status(400).json({

@@ -1,2 +1,5 @@
 PORT = 4000
 MONGO_URI = your_mongo_url
+JWE_SECRET = your_JWT_secret
+JWT_EXPIRY = 30d
+COOKIE_EXPIRY = 20

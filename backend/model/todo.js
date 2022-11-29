@@ -2,6 +2,10 @@ const mongoose = require("mongoose");
 
 const todoSchema = new mongoose.Schema(
   {
+    uid: {
+      type: String,
+      require: [true, "user id is not present"],
+    },
     todoTitle: {
       type: String,
       require: [true, "Please enter todo title"],
