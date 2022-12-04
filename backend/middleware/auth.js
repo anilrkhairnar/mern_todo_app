@@ -3,6 +3,7 @@ const JWT = require("jsonwebtoken");
 
 const auth = async (req, res, next) => {
   const { token } = req.cookies;
+  console.log("token", token);
 
   if (token) {
     const decodedToken = JWT.verify(token, process.env.JWE_SECRET);

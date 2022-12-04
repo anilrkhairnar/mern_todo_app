@@ -1,42 +1,21 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useState } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import QuickTodoCreate from "./components/QuickTodoCreate";
-import TodoCard from "./components/TodoCard";
-
-import relaxingImage from "./assets/106278-relaxing-boy.gif";
+import UserContext from "./context/userContext";
+import { Todo, Signup, Login } from "./components/pages";
 
 const App = () => {
-  const [allTodoData, setAllTodoData] = useState();
-
-  const getAllTodo = async () => {
-    try {
-      const allTodo = await axios.get("/getAllTodo");
-      setAllTodoData(allTodo.data.todo);
-    } catch (error) {
-      console.log("Error while fetching All Todo");
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    getAllTodo();
-  }, []);
-  // console.log(allTodoData);
+  const [userData, setUserData] = useState({});
   return (
-    <>
-      <div className="mt-5 mx-5 lg:ml-64 flex flex-wrap gap-2 md:gap-5">
-        <QuickTodoCreate />
-      </div>
-
-      <div className="mt-5 mx-5 lg:ml-64 flex flex-wrap gap-4 lg:gap-7">
-        {allTodoData ? (
-          allTodoData.map((todo, index) => <TodoCard todo={todo} key={index} />)
-        ) : (
-          <img src={relaxingImage} alt="relaxingImage" />
-        )}
-      </div>
-    </>
+    <UserContext.Provider value={{ userData, setUserData }}>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/todo" element={<Todo />} />
+        </Routes>
+      </BrowserRouter>
+    </UserContext.Provider>
   );
 };
 

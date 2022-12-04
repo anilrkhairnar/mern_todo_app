@@ -14,22 +14,16 @@ const {
   deleteTask,
 } = require("../controller/todo");
 
-// import todo controller
-const { register } = require("../controller/user");
-
 router.route("/").get((req, res) => {
   res.status(200).send("hello");
 });
 
 // Todo routes
-router.route("/getAllTodo").get(auth, getAllTodo);
-router.route("/createTodo").post(auth, createTodo);
-router.route("/createTask/:todoId").put(auth, createTask);
-router.route("/editTodo/:todoId").put(auth, editTodo);
-router.route("/deleteTodo/:todoId").delete(auth, deleteTodo);
-router.route("/deleteTask/:todoId").delete(auth, deleteTask);
-
-// User routes
-router.route("/register").post(register);
+router.route("/getAllTodo").post(getAllTodo);
+router.route("/createTodo").post(createTodo);
+router.route("/createTask/:todoId").put(createTask);
+router.route("/editTodo/:todoId").put(editTodo);
+router.route("/deleteTodo/:todoId").delete(deleteTodo);
+router.route("/deleteTask/:todoId").delete(deleteTask);
 
 module.exports = router;

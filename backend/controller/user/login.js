@@ -13,6 +13,7 @@ const login = bigPromise(async (req, res) => {
           expires: new Date(
             Date.now() + process.env.COOKIE_EXPIRY * 12 * 60 * 60 * 1000
           ),
+          domain: "127.0.0.1",
           httpOnly: true,
         })
         .json({
@@ -34,7 +35,9 @@ const login = bigPromise(async (req, res) => {
         return new Error("all fields needs to be in string format");
       }
 
-      const user = await User.findOne({ email }).select("password");
+      const user = await User.findOne({ email })
+        .select("name")
+        .select("password");
 
       if (!user) {
         new Error("User doesn't exist");
@@ -61,6 +64,8 @@ const login = bigPromise(async (req, res) => {
           expires: new Date(
             Date.now() + process.env.COOKIE_EXPIRY * 12 * 60 * 60 * 1000
           ),
+          domain: "127.0.0.1",
+          path: "/",
           httpOnly: true,
         })
         .json({

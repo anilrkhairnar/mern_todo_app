@@ -5,7 +5,7 @@ const register = bigPromise(async (req, res) => {
   const { name, email, password } = req.body;
 
   if (!(name && email && password)) {
-    res.status(400).json({
+    return res.status(400).json({
       success: false,
       message: "all fields are required",
     });
@@ -16,14 +16,19 @@ const register = bigPromise(async (req, res) => {
     typeof email !== "string" &&
     typeof password !== "string"
   ) {
-    return new Error("all fields needs to be in string format");
+    new Error("all fields needs to be in string format");
+    return res.status(400).json({
+      success: false,
+      message: "all fields needs to be in string format",
+    });
   }
 
   try {
     let user = await User.findOne({ email });
     if (user) {
-      res.status(400).json({
+      return res.status(400).json({
         success: false,
+        validMessage: "user already exist",
         message: "user already exist",
       });
     }
@@ -38,7 +43,6 @@ const register = bigPromise(async (req, res) => {
 
     user.password = undefined;
 
-    console.log("this is user data :", user);
     res
       .status(201)
       .cookie("token", token, {
@@ -46,6 +50,7 @@ const register = bigPromise(async (req, res) => {
           Date.now() + process.env.COOKIE_EXPIRY * 12 * 60 * 60 * 1000
         ),
         httpOnly: true,
+        secure: true,
       })
       .json({
         success: true,
@@ -53,10 +58,17 @@ const register = bigPromise(async (req, res) => {
         message: "user created successfully",
       });
   } catch (error) {
-    console.log("error while creating user");
-    console.log(error);
+    if (error.code === 11000) {
+      console.log("user already exist");
+      return res.status(400).json({
+        success: false,
+        message: "user already exist",
+      });
+    }
+    console.log("my custom error: ", error);
     res.status(500).json({
       success: false,
+      validMessage: error.message,
       message: "error while creating user",
     });
   }

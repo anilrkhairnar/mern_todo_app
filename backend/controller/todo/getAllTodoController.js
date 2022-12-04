@@ -5,7 +5,8 @@ const bigPromise = require("../../middleware/bigPromise");
 const Todo = require("../../model/todo");
 
 const getAllTodo = bigPromise(async (req, res) => {
-  const user = req.user;
+  // const user = req.user;
+  const { user } = req.body;
   if (!user) {
     new Error("Access Denied");
     return res.status(400).json({
@@ -14,7 +15,7 @@ const getAllTodo = bigPromise(async (req, res) => {
     });
   }
 
-  const todo = await Todo.find({ uid: user._id });
+  const todo = await Todo.find({ uid: user });
 
   if (todo.length == 0) {
     return res.sendStatus(204);

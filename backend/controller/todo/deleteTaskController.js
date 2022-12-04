@@ -5,7 +5,8 @@ const bigPromise = require("../../middleware/bigPromise");
 const Todo = require("../../model/todo");
 
 const deleteTask = bigPromise(async (req, res) => {
-  const user = req.user;
+  // const user = req.user;
+  const { user } = req.body;
   if (!user) {
     new Error("Access Denied");
     return res.status(400).json({
@@ -15,7 +16,7 @@ const deleteTask = bigPromise(async (req, res) => {
   }
 
   const todoId = req.params.todoId;
-  const task = req.body;
+  const { task } = req.body;
 
   if (!todoId) {
     return res.status(400).json({
@@ -32,8 +33,8 @@ const deleteTask = bigPromise(async (req, res) => {
       });
     }
     const todo = await Todo.findOne({ _id: todoId });
-    todo.tasks.filter((dbTask) => {
-      dbTask.taskTitle === task.taskTitle && todo.tasks.pull(task);
+    const res = todo.tasks.filter((dbTask) => {
+      if (dbTask.taskTitle === task.taskTitle) return todo.tasks.pull(task);
     });
     todo.save();
   } catch (error) {

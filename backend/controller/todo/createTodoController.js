@@ -7,16 +7,11 @@ const JWT = require("jsonwebtoken");
 const Todo = require("../../model/todo");
 
 const createTodo = bigPromise(async (req, res) => {
-  const user = req.user;
-  if (!user) {
-    new Error("Access Denied");
-    return res.status(400).json({
-      success: false,
-      message: "Access Denied",
-    });
-  }
+  // const user = req.user;
+  const { user } = req.body;
 
-  const uid = user._id;
+  // const uid = user._id;
+  const uid = user;
 
   const { todoTitle, color } = req.body;
 
@@ -49,13 +44,7 @@ const createTodo = bigPromise(async (req, res) => {
     });
   } catch (error) {
     console.log("error while creating todo");
-    console.log(error.message);
-    if (error.code == 11000) {
-      return res.status(400).json({
-        success: false,
-        message: "Todo already exist",
-      });
-    }
+    console.log(error);
     res.status(500).json({
       success: false,
       message: "Server error while creating todo",

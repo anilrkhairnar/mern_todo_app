@@ -5,7 +5,9 @@ const bigPromise = require("../../middleware/bigPromise");
 const Todo = require("../../model/todo");
 
 const createTask = bigPromise(async (req, res) => {
-  const user = req.user;
+  // const user = req.user;
+
+  const { user } = req.body;
   if (!user) {
     new Error("Access Denied");
     return res.status(400).json({
@@ -34,7 +36,6 @@ const createTask = bigPromise(async (req, res) => {
   try {
     tasks.forEach((task) => {
       todo.tasks.push(task);
-      console.log("I am here");
     });
 
     todo.save();

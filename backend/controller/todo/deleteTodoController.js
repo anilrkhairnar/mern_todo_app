@@ -5,7 +5,8 @@ const bigPromise = require("../../middleware/bigPromise");
 const Todo = require("../../model/todo");
 
 const deleteTodo = bigPromise(async (req, res) => {
-  const user = req.user;
+  // const user = req.user;
+  const { user } = req.body;
   if (!user) {
     new Error("Access Denied");
     return res.status(400).json({

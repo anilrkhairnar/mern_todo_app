@@ -9,7 +9,6 @@ const todoSchema = new mongoose.Schema(
     todoTitle: {
       type: String,
       require: [true, "Please enter todo title"],
-      unique: true,
     },
     color: String,
     tasks: [],

@@ -5,7 +5,9 @@ const bigPromise = require("../../middleware/bigPromise");
 const Todo = require("../../model/todo");
 
 const editTodo = async (req, res) => {
-  const user = req.user;
+  console.log("body data: ", req.body);
+  // const user = req.user;
+  const { user } = req.body;
   if (!user) {
     new Error("Access Denied");
     return res.status(400).json({
@@ -36,7 +38,7 @@ const editTodo = async (req, res) => {
 
     todo.save();
 
-    console.log(todo);
+    // console.log(todo);
     res.status(200).json({
       success: true,
       todo,
