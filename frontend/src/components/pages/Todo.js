@@ -103,7 +103,6 @@ const Todo = () => {
         `http://127.0.0.1:4000/api/v1/createTask/${todoId}`,
         createTask
       );
-      console.log("task added result: ", result);
 
       getAllTodo();
     } catch (error) {
@@ -231,6 +230,26 @@ const Todo = () => {
     }
   };
 
+  // delete task function
+  const deleteTaskFunc = async (todoId, task) => {
+    const user = userData.user._id;
+
+    try {
+      const { data } = await axios.delete(
+        `http://127.0.0.1:4000/api/v1/deleteTask/${todoId}`,
+        {
+          data: { user, task },
+        }
+      );
+      if (data.success === true) {
+        getAllTodo();
+      }
+    } catch (error) {
+      console.log("error while deleting todo");
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     if (Object.keys(userData).length === 0) {
       navigate("/");
@@ -242,63 +261,61 @@ const Todo = () => {
       {Object.keys(userData).length !== 0 && (
         <div className="w-full relative h-full flex flex-col">
           {/* navbar start */}
-          <div className="w-full h-16 flex flex-col justify-center bg-white shadow-lg">
-            <div className="px-32 flex justify-end items-center gap-2">
-              <div className="relative">
-                <div
-                  className="px-4 py-2 flex justify-center items-center gap-2 hover:bg-gray-900 active:scale-95 rounded-xl bg-gray-800 shadow-xl duration-300 ease-in-out cursor-pointer"
-                  onClick={() => setAddTodoMode(true)}
-                >
-                  <FontAwesomeIcon
-                    className="text-base text-gray-300"
-                    icon={faPlus}
+          <div className="px-5 md:px-32 w-full h-16 flex flex-row-reverse md:flex-row justify-between md:justify-end items-center gap-2 shadow-lg">
+            <div className="relative">
+              <div
+                className="px-4 py-2 flex justify-center items-center gap-2 hover:bg-gray-900 active:scale-95 rounded-xl bg-gray-800 shadow-xl duration-300 ease-in-out cursor-pointer"
+                onClick={() => setAddTodoMode(true)}
+              >
+                <FontAwesomeIcon
+                  className="text-base text-gray-200"
+                  icon={faPlus}
+                />
+                <h3 className="text-xl text-gray-200">Add todo</h3>
+              </div>
+              {addTodoMode && (
+                <div className="p-2 absolute -bottom-16 right-0 md:-right-[40%] flex justify-center items-center gap-2 bg-white rounded-xl shadow-xl">
+                  <div className="w-4 h-4 absolute -top-1 right-20 md:right-[50%]  bg-white rotate-45 rounded-sm"></div>
+                  <input
+                    className="pl-2 text-base rounded-lg outline-none z-10"
+                    placeholder="Enter todo"
+                    type="text"
+                    value={addTodoInput}
+                    onChange={(e) => setAddTodoInput(e.target.value)}
                   />
-                  <h3 className="text-xl text-gray-300">Add todo</h3>
+                  {addTodoInput ? (
+                    <button
+                      className="w-8 h-8 z-10 rounded-full bg-blue-500  hover:scale-105 duration-300 ease-in-out active:bg-blue-600 active:scale-100"
+                      onClick={() =>
+                        createTodoFunc(getRandomColor(), addTodoInput)
+                      }
+                    >
+                      <FontAwesomeIcon
+                        className="text-base text-white"
+                        icon={faCheck}
+                      />
+                    </button>
+                  ) : (
+                    <button
+                      className="w-8 h-8 z-10 rounded-full bg-gray-700 hover:scale-105 duration-300 ease-in-out active:bg-gray-800 active:scale-100"
+                      onClick={() => setAddTodoMode(false)}
+                    >
+                      <FontAwesomeIcon
+                        className="text-base text-white"
+                        icon={faTimes}
+                      />
+                    </button>
+                  )}
                 </div>
-                {addTodoMode && (
-                  <div className="p-2 absolute -bottom-16 -left-20 flex justify-center items-center gap-2 bg-white rounded-xl shadow-xl">
-                    <div className="w-4 h-4 absolute -top-1  bg-white rotate-45 rounded-sm"></div>
-                    <input
-                      className="pl-2 text-base rounded-lg outline-none z-10"
-                      placeholder="Enter todo"
-                      type="text"
-                      value={addTodoInput}
-                      onChange={(e) => setAddTodoInput(e.target.value)}
-                    />
-                    {addTodoInput ? (
-                      <button
-                        className="w-8 h-8 z-10 rounded-full bg-blue-500  hover:scale-105 duration-300 ease-in-out active:bg-blue-600 active:scale-100"
-                        onClick={() =>
-                          createTodoFunc(getRandomColor(), addTodoInput)
-                        }
-                      >
-                        <FontAwesomeIcon
-                          className="text-base text-white"
-                          icon={faCheck}
-                        />
-                      </button>
-                    ) : (
-                      <button
-                        className="w-8 h-8 z-10 rounded-full bg-gray-700 hover:scale-105 duration-300 ease-in-out active:bg-gray-800 active:scale-100"
-                        onClick={() => setAddTodoMode(false)}
-                      >
-                        <FontAwesomeIcon
-                          className="text-base text-white"
-                          icon={faTimes}
-                        />
-                      </button>
-                    )}
-                  </div>
-                )}
-              </div>
-              <div className="mx-5 w-[.5px] h-full bg-gray-900"></div>
-              <div className="w-10 h-10 flex justify-center items-center text-2xl font-semibold bg-gray-800 text-gray-300 rounded-full shadow-lg cursor-pointer">
-                {userData.user.name[0].toUpperCase()}
-              </div>
-              <h3 className="text-xl font-medium text-white cursor-pointer">
-                {userData.user.name}
-              </h3>
+              )}
             </div>
+            <div className="hidden md:block mx-5 w-[.5px] h-4/6 bg-gray-900"></div>
+            <div className="w-10 h-10 flex justify-center items-center text-2xl font-semibold bg-gray-800 text-gray-200 rounded-full shadow-lg cursor-pointer">
+              {userData.user.name[0].toUpperCase()}
+            </div>
+            <h3 className="hidden md:block text-xl font-medium text-gray-800 cursor-pointer">
+              {userData.user.name}
+            </h3>
           </div>
           {/* navbar end */}
 
@@ -353,12 +370,12 @@ const Todo = () => {
           )}
           {/* Edit mode card end */}
 
-          {/* Quick Tabs start */}
           <div className="flex-col">
+            {/* Quick Tabs start */}
             <div className="mt-5 mx-5 lg:ml-64 flex flex-wrap gap-2 md:gap-5">
               {quickTabs.map((todo, index) => (
                 <div
-                  className="py-2 px-4 flex items-center gap-2 bg-white rounded-lg shadow-lg cursor-pointer"
+                  className="py-2 px-4 flex items-center gap-2 bg-white hover:scale-105 hover:shadow-xl active:scale-100 active:shadow-lg rounded-lg shadow-lg duration-300 ease-in-out cursor-pointer"
                   key={index}
                   onClick={() => createTodoFunc(todo.color, todo.todoTitle)}
                 >
@@ -377,7 +394,10 @@ const Todo = () => {
 
               {allTodoData ? (
                 allTodoData.map((todo, todoIndex) => (
-                  <div className="flex gap-5" key={todoIndex}>
+                  <div
+                    className="w-full sm:w-2/6 md:w-fit flex gap-5"
+                    key={todoIndex}
+                  >
                     <div className="relative group py-4 px-4 w-full md:w-72 bg-white rounded-lg shadow-lg duration-200 ease-in-out hover:shadow-xl">
                       {/* card top start */}
                       <div className="mt-1 w-full flex items-center justify-between">
@@ -410,24 +430,28 @@ const Todo = () => {
                         {todo.tasks &&
                           todo.tasks.map((task, taskIndex) => (
                             <div
-                              className=" flex items-center gap-2 cursor-pointer"
+                              className="task flex justify-between items-center gap-2 cursor-pointer"
                               key={taskIndex}
-                              onClick={() =>
-                                flipIsDone(todo, taskIndex, task.isDone)
-                              }
                             >
-                              <FontAwesomeIcon
-                                className="text-gray-500"
-                                icon={
-                                  task.isDone === "true" ? faCheck : faCircle
+                              <div
+                                className="flex items-center gap-2"
+                                onClick={() =>
+                                  flipIsDone(todo, taskIndex, task.isDone)
                                 }
-                              />
-                              <h4 className="text-gray-500">
-                                {task.taskTitle}
-                              </h4>
+                              >
+                                <FontAwesomeIcon
+                                  className="text-gray-500"
+                                  icon={
+                                    task.isDone === "true" ? faCheck : faCircle
+                                  }
+                                />
+                                <h4 className="text-gray-500">
+                                  {task.taskTitle}
+                                </h4>
+                              </div>
                               <FontAwesomeIcon
-                                className="hidden group-hover:block hover:scale-110 text-gray-500 hover:text-orange-400 duration-300 ease-out cursor-pointer"
-                                onClick={() => deleteTodoFunc(todo._id)}
+                                className="hidden delete-icon hover:scale-110 text-gray-500 hover:text-orange-400 duration-300 ease-out cursor-pointer"
+                                onClick={() => deleteTaskFunc(todo._id, task)}
                                 icon={faTrash}
                               />
                             </div>
@@ -485,7 +509,7 @@ const Todo = () => {
                         )}
                       </div>
                     </div>
-                    {/* Showing todo start */}
+                    {/* Showing todo end */}
                   </div>
                 ))
               ) : (

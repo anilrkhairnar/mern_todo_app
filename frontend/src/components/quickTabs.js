@@ -12,12 +12,12 @@ const quickTabs = [
     color: "#65D2BF",
   },
   {
-    todoTitle: "Appointment",
-    color: "#FACF36",
-  },
-  {
     todoTitle: "Grocery",
     color: "#36a5fa",
+  },
+  {
+    todoTitle: "Appointment",
+    color: "#FACF36",
   },
 ];
 

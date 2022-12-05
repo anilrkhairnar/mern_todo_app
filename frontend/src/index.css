@@ -6,3 +6,6 @@ body,
   width: 100%;
   height: 100vh;
 }
+.task:hover .delete-icon {
+  display: block;
+}
