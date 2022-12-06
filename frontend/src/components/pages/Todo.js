@@ -49,14 +49,13 @@ const Todo = () => {
     const token = Cookies.get("token");
     try {
       const { data } = await axios.post(
-        "http://127.0.0.1:4000/api/v1/login",
+        `${process.env.REACT_APP_SERVER_URL}/login`,
         { token },
         {
           withCredentials: true,
         }
       );
 
-      console.log("this is data", data);
       if (data.success === true) {
         setUserData(data);
       }
@@ -69,16 +68,13 @@ const Todo = () => {
   // fetching user's todo
   const getAllTodo = async () => {
     const token = Cookies.get("token");
-    console.log("hewew");
     try {
       // console.log("allTodoData: ", allTodoData);
       const allTodo = await axios.post(
-        "http://127.0.0.1:4000/api/v1/getAllTodo",
+        `${process.env.REACT_APP_SERVER_URL}/getAllTodo`,
         { token }
       );
-      console.log("alltodo", allTodo);
       setAllTodoData(allTodo.data.todo);
-      console.log("data: ", allTodoData);
     } catch (error) {
       console.log("Error while fetching All Todo");
       console.log(error);
@@ -102,11 +98,10 @@ const Todo = () => {
         updatedIsDone,
       };
 
-      const result = await axios.put(
-        `http://127.0.0.1:4000/api/v1/editTodo/${todoId}`,
+      await axios.put(
+        `${process.env.REACT_APP_SERVER_URL}/editTodo/${todoId}`,
         updatedTodo
       );
-      // console.log("result: ", result);
       getAllTodo();
     } catch (error) {
       console.log("error while flipping isDone");
@@ -127,8 +122,8 @@ const Todo = () => {
     };
     setAddTaskInput("");
     try {
-      const result = await axios.put(
-        `http://127.0.0.1:4000/api/v1/createTask/${todoId}`,
+      await axios.put(
+        `${process.env.REACT_APP_SERVER_URL}/createTask/${todoId}`,
         createTask
       );
 
@@ -164,7 +159,7 @@ const Todo = () => {
     if (count === 0) {
       try {
         const { data } = await axios.put(
-          `http://127.0.0.1:4000/api/v1/editTodo/${editTodo._id}`,
+          `${process.env.REACT_APP_SERVER_URL}/editTodo/${editTodo._id}`,
           todo
         );
 
@@ -192,7 +187,7 @@ const Todo = () => {
 
       try {
         const { data } = await axios.post(
-          `http://127.0.0.1:4000/api/v1/createTodo/`,
+          `${process.env.REACT_APP_SERVER_URL}/createTodo/`,
           todo
         );
 
@@ -243,7 +238,7 @@ const Todo = () => {
     if (window.confirm("Conform do you want to delete todo?") === true) {
       try {
         const { data } = await axios.delete(
-          `http://127.0.0.1:4000/api/v1/deleteTodo/${todoId}`,
+          `${process.env.REACT_APP_SERVER_URL}/deleteTodo/${todoId}`,
           {
             data: { user },
           }
@@ -264,7 +259,7 @@ const Todo = () => {
 
     try {
       const { data } = await axios.delete(
-        `http://127.0.0.1:4000/api/v1/deleteTask/${todoId}`,
+        `${process.env.REACT_APP_SERVER_URL}/deleteTask/${todoId}`,
         {
           data: { user, task },
         }
@@ -279,9 +274,24 @@ const Todo = () => {
   };
 
   // logout function
-  const logout = () => {
-    Cookies.remove("token");
-    navigate("/");
+  const logout = async () => {
+    const token = Cookies.get("token");
+
+    try {
+      const { data } = await axios.post(
+        `${process.env.REACT_APP_SERVER_URL}/logout`,
+        {
+          token,
+        }
+      );
+      if (data.success === true) {
+        Cookies.remove("token");
+        navigate("/");
+      }
+    } catch (error) {
+      console.log("error while deleting todo");
+      console.log(error);
+    }
   };
 
   useEffect(() => {
@@ -289,13 +299,14 @@ const Todo = () => {
       checkSession();
     }
     getAllTodo();
+    // eslint-disable-next-line
   }, []);
   return (
     <>
       {Object.keys(userData).length !== 0 && (
         <div className="w-full relative h-full flex flex-col">
           {/* navbar start */}
-          <div className="px-5 md:px-32 w-full h-16 flex flex-row-reverse md:flex-row justify-between md:justify-end items-center gap-2 shadow-lg">
+          <div className="px-5 md:px-28 w-full h-16 flex flex-row-reverse md:flex-row justify-between md:justify-end items-center gap-2 shadow-lg">
             <div className="relative">
               <div
                 className="px-4 py-2 flex justify-center items-center gap-2 hover:bg-gray-900 active:scale-95 rounded-xl bg-gray-800 shadow-xl duration-300 ease-in-out cursor-pointer"
@@ -429,7 +440,7 @@ const Todo = () => {
           {/* Edit mode card end */}
 
           <div
-            className="md:px-24 lg:px-64 w-full h-full flex-col"
+            className="md:px-20 lg:px-56 w-full h-full flex-col"
             onClick={(e) => {
               e.preventDefault();
 

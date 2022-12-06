@@ -7,7 +7,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 const Login = () => {
-  const { userData, setUserData } = useContext(userContext);
+  const { setUserData } = useContext(userContext);
   // navigator
   const navigate = useNavigate();
 
@@ -19,8 +19,9 @@ const Login = () => {
     e.preventDefault();
 
     try {
+      console.log("this is user: ", user);
       const { data } = await axios.post(
-        "http://127.0.0.1:4000/api/v1/login",
+        `${process.env.REACT_APP_SERVER_URL}/login`,
         user
       );
 
@@ -47,14 +48,13 @@ const Login = () => {
     const token = Cookies.get("token");
     try {
       const { data } = await axios.post(
-        "http://127.0.0.1:4000/api/v1/login",
+        `${process.env.REACT_APP_SERVER_URL}/login`,
         { token },
         {
           withCredentials: true,
         }
       );
 
-      console.log("this is data", data);
       if (data.success === true) {
         setUserData(data);
         navigate("/todo");

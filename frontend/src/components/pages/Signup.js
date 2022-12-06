@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -18,18 +18,16 @@ const Signup = () => {
 
     try {
       const { data } = await axios.post(
-        "http://127.0.0.1:4000/api/v1/register",
+        `${process.env.REACT_APP_SERVER_URL}/register`,
         user
       );
-      console.log(data);
 
       if (data.success === true) {
-        console.log(data.token);
         Cookies.set("token", data.token, {
           expires: 20,
           path: "/",
         });
-        navigate("/");
+        navigate("/todo");
       }
     } catch (error) {
       error.response.data?.validMessage &&
