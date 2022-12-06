@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useContext } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+
+import axios from "axios";
+import Cookies from "js-cookie";
 
 import userContext from "../../context/userContext";
 
@@ -14,13 +16,13 @@ import {
   faPlus,
   faCheck,
   faTimes,
-  faBicycle,
   faTrash,
+  faRightFromBracket,
 } from "@fortawesome/free-solid-svg-icons";
 import { faCircle } from "@fortawesome/free-regular-svg-icons";
 
 // Image - relaxing
-import relaxingImage from "../../assets/106278-relaxing-boy.gif";
+import relaxingImage from "../../assets/empty-box-by-partho.gif";
 
 const Todo = () => {
   const [allTodoData, setAllTodoData] = useState();
@@ -33,6 +35,7 @@ const Todo = () => {
   const [loader, setLoader] = useState(false);
   const [addTodoMode, setAddTodoMode] = useState(false);
   const [addTaskMode, setAddTaskMode] = useState(false);
+  const [logoutMode, setLogoutMode] = useState(false);
   const [addTodoInput, setAddTodoInput] = useState("");
 
   // navigator
@@ -41,16 +44,41 @@ const Todo = () => {
   // context API
   const { userData, setUserData } = useContext(userContext);
 
+  // check session
+  const checkSession = async () => {
+    const token = Cookies.get("token");
+    try {
+      const { data } = await axios.post(
+        "http://127.0.0.1:4000/api/v1/login",
+        { token },
+        {
+          withCredentials: true,
+        }
+      );
+
+      console.log("this is data", data);
+      if (data.success === true) {
+        setUserData(data);
+      }
+    } catch (error) {
+      navigate("/");
+      console.log("error while checking session: ", error);
+    }
+  };
+
   // fetching user's todo
   const getAllTodo = async () => {
+    const token = Cookies.get("token");
+    console.log("hewew");
     try {
       // console.log("allTodoData: ", allTodoData);
       const allTodo = await axios.post(
         "http://127.0.0.1:4000/api/v1/getAllTodo",
-        { user: userData.user._id }
+        { token }
       );
-      // console.log("alltodo", allTodo);
-      setAllTodoData(allTodo.data?.todo);
+      console.log("alltodo", allTodo);
+      setAllTodoData(allTodo.data.todo);
+      console.log("data: ", allTodoData);
     } catch (error) {
       console.log("Error while fetching All Todo");
       console.log(error);
@@ -250,12 +278,18 @@ const Todo = () => {
     }
   };
 
+  // logout function
+  const logout = () => {
+    Cookies.remove("token");
+    navigate("/");
+  };
+
   useEffect(() => {
     if (Object.keys(userData).length === 0) {
-      navigate("/");
+      checkSession();
     }
     getAllTodo();
-  }, [loader]);
+  }, []);
   return (
     <>
       {Object.keys(userData).length !== 0 && (
@@ -265,7 +299,10 @@ const Todo = () => {
             <div className="relative">
               <div
                 className="px-4 py-2 flex justify-center items-center gap-2 hover:bg-gray-900 active:scale-95 rounded-xl bg-gray-800 shadow-xl duration-300 ease-in-out cursor-pointer"
-                onClick={() => setAddTodoMode(true)}
+                onClick={() => {
+                  setLogoutMode(false);
+                  setAddTodoMode(true);
+                }}
               >
                 <FontAwesomeIcon
                   className="text-base text-gray-200"
@@ -310,12 +347,33 @@ const Todo = () => {
               )}
             </div>
             <div className="hidden md:block mx-5 w-[.5px] h-4/6 bg-gray-900"></div>
-            <div className="w-10 h-10 flex justify-center items-center text-2xl font-semibold bg-gray-800 text-gray-200 rounded-full shadow-lg cursor-pointer">
-              {userData.user.name[0].toUpperCase()}
+            <div
+              className="relative flex items-center gap-2"
+              onClick={() => {
+                setAddTodoMode(false);
+                setLogoutMode(true);
+              }}
+            >
+              <div className="w-10 h-10 flex justify-center items-center text-2xl font-semibold bg-gray-800 text-gray-200 rounded-full shadow-lg cursor-pointer">
+                {userData.user.name[0].toUpperCase()}
+              </div>
+              <h3 className="hidden md:block text-xl font-medium text-gray-800 cursor-pointer">
+                {userData.user.name}
+              </h3>
+              {logoutMode && (
+                <div
+                  className="px-5 py-3 absolute -bottom-16 -right-20 md:-right-[30%] flex justify-center items-center gap-2 bg-white rounded-xl shadow-xl cursor-pointer"
+                  onClick={logout}
+                >
+                  <div className="w-4 h-4 absolute -top-1 right-20 md:right-[50%]  bg-white rotate-45 rounded-sm"></div>
+                  <FontAwesomeIcon
+                    className="text-base text-red-400"
+                    icon={faRightFromBracket}
+                  />
+                  <h3 className="font-medium">Logout</h3>
+                </div>
+              )}
             </div>
-            <h3 className="hidden md:block text-xl font-medium text-gray-800 cursor-pointer">
-              {userData.user.name}
-            </h3>
           </div>
           {/* navbar end */}
 
@@ -370,9 +428,17 @@ const Todo = () => {
           )}
           {/* Edit mode card end */}
 
-          <div className="flex-col">
+          <div
+            className="md:px-24 lg:px-64 w-full h-full flex-col"
+            onClick={(e) => {
+              e.preventDefault();
+
+              setAddTodoMode(false);
+              setLogoutMode(false);
+            }}
+          >
             {/* Quick Tabs start */}
-            <div className="mt-5 mx-5 lg:ml-64 flex flex-wrap gap-2 md:gap-5">
+            <div className="mt-5 mx-5 flex flex-wrap gap-2 md:gap-5">
               {quickTabs.map((todo, index) => (
                 <div
                   className="py-2 px-4 flex items-center gap-2 bg-white hover:scale-105 hover:shadow-xl active:scale-100 active:shadow-lg rounded-lg shadow-lg duration-300 ease-in-out cursor-pointer"
@@ -389,10 +455,10 @@ const Todo = () => {
             </div>
             {/* Quick Tabs end */}
 
-            <div className="mt-5 mx-5 lg:ml-64 flex flex-wrap gap-4 lg:gap-10">
+            <div className="mt-5 mx-5 flex flex-wrap gap-4 lg:gap-10">
               {/* Showing todo start */}
 
-              {allTodoData ? (
+              {allTodoData !== undefined ? (
                 allTodoData.map((todo, todoIndex) => (
                   <div
                     className="w-full sm:w-2/6 md:w-fit flex gap-5"
@@ -514,7 +580,7 @@ const Todo = () => {
                 ))
               ) : (
                 <img
-                  className="ml-32"
+                  className="md:mx-32"
                   src={relaxingImage}
                   alt="relaxingImage"
                 />

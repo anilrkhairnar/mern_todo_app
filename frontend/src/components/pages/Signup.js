@@ -15,7 +15,6 @@ const Signup = () => {
   // handling submit
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(user);
 
     try {
       const { data } = await axios.post(
@@ -25,7 +24,11 @@ const Signup = () => {
       console.log(data);
 
       if (data.success === true) {
-        // Cookies.set("token", )
+        console.log(data.token);
+        Cookies.set("token", data.token, {
+          expires: 20,
+          path: "/",
+        });
         navigate("/");
       }
     } catch (error) {

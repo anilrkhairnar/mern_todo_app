@@ -4,6 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import userContext from "../../context/userContext";
 
 import axios from "axios";
+import Cookies from "js-cookie";
 
 const Login = () => {
   const { userData, setUserData } = useContext(userContext);
@@ -24,6 +25,11 @@ const Login = () => {
       );
 
       if (data.success === true) {
+        console.log(data.token);
+        Cookies.set("token", data.token, {
+          expires: 20,
+          path: "/",
+        });
         setUserData(data);
         navigate("/todo");
       }
@@ -38,10 +44,11 @@ const Login = () => {
   // check if user token is there
   // before Login
   const checkSession = async () => {
+    const token = Cookies.get("token");
     try {
       const { data } = await axios.post(
         "http://127.0.0.1:4000/api/v1/login",
-        user,
+        { token },
         {
           withCredentials: true,
         }
@@ -49,6 +56,7 @@ const Login = () => {
 
       console.log("this is data", data);
       if (data.success === true) {
+        setUserData(data);
         navigate("/todo");
       }
     } catch (error) {
@@ -57,7 +65,7 @@ const Login = () => {
   };
 
   useEffect(() => {
-    // checkSession();
+    checkSession();
   }, []);
   return (
     <div className="w-full h-full flex justify-center items-center bg-orange-100">

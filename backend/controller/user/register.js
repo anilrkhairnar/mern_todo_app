@@ -55,6 +55,7 @@ const register = bigPromise(async (req, res) => {
       .json({
         success: true,
         user,
+        token,
         message: "user created successfully",
       });
   } catch (error) {

@@ -19,6 +19,7 @@ const login = bigPromise(async (req, res) => {
         .json({
           success: true,
           user,
+          token,
           message: "user logged in successfully",
         });
     } else {
@@ -71,6 +72,7 @@ const login = bigPromise(async (req, res) => {
         .json({
           success: true,
           user,
+          token,
           message: "user logged in successfully",
         });
     }

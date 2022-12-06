@@ -19,7 +19,7 @@ router.route("/").get((req, res) => {
 });
 
 // Todo routes
-router.route("/getAllTodo").post(getAllTodo);
+router.route("/getAllTodo").post(auth, getAllTodo);
 router.route("/createTodo").post(createTodo);
 router.route("/createTask/:todoId").put(createTask);
 router.route("/editTodo/:todoId").put(editTodo);
